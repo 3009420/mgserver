@@ -1,0 +1,24 @@
+{
+"port":9030,
+"arenas":
+  [
+    {
+    "name":"Test 1 CTF",
+    "text":"Testtext",
+    "map":"flags",
+    "type":1,
+    "options":"C",
+    "player_limit":64,
+    "min_players":10
+    },
+    {
+    "name":"Test 2 TDM",
+    "text":"kknd",
+    "map":"death",
+    "type":"1",
+    "options":"TC",
+    "player_limit":"64",
+    "min_players":32
+    }
+  ]
+}

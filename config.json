@@ -1,0 +1,5 @@
+{
+"moduledir":".",
+"modules":["auth","rumble"],
+"slots":4
+}
