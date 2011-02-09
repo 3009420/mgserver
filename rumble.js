@@ -120,9 +120,26 @@ function RumbleServer()
           
           break;
           
-//         case 0x4100:
-//           log.log("Got 0x4100","Rumble",36);
-//           break;
+        case 0x4100:
+          log.log("Got 0x4100","Rumble",36);
+          opcode_response |= 0x10;
+          packet_this = slot.rumble_data.packet_next;
+          slot.rumble_data.packet_next++
+          var r = jspack.Unpack("!LHBB",msg,read_ofs);
+          console.log(r);
+          var catl = config.arenas[r[3]].text.length;
+          var reply_buf=new Buffer(reply.length+4+9+catl);
+          reply.copy(reply_buf,0,0);
+          reply_buf = jspack.PackTo("!HBB 9B "+catl+"s",reply_buf,reply.length,[2,0xb9,0,0,1,2,3,4,5,6,7,8,config.arenas[r[3]].text])
+          reply=reply_buf
+          
+          packet_q = slot.rumble_data.packet_next;
+          slot.rumble_data.packet_next++
+          var reply_buf = new Buffer(12);
+          reply_buf = jspack.PackTo("!LL HH",reply_buf,0,[0,(0x10 << 24 | packet_q << 12),0,0x64])
+          send_queue.push({"port":rinfo.port,"address":rinfo.address,"packet":reply_buf})
+          
+          break;
         default:
           log.log("Unknown command code: "+command_code[1],"Rumble","35;1");
           log.Hex(msg);
@@ -225,8 +242,11 @@ function RumbleServer()
   {
     if(send_queue.length==0)
       return
-    p=send_queue.shift();
-    gameSocket.send(p.packet, 0, p.packet.length, p.port, p.address);
+    while(send_queue.length>0)
+    {
+      p=send_queue.shift();
+      gameSocket.send(p.packet, 0, p.packet.length, p.port, p.address);
+    }
   }
   
   
