@@ -1,7 +1,14 @@
 var dgram = require("dgram");
 var fs = require("fs");
-var log = require("./logger").logger;
-var jspack = require("./jspack").jspack;
+var path = require("path");
+var log = require("../shared/logger").logger;
+var jspack = require("../shared/jspack").jspack;
+
+if(global.confdir=="")
+{
+  global.confdir=path.resolve(".")+"/conf/"
+}
+  
 
 function AuthServer()
 {
@@ -20,7 +27,7 @@ function AuthServer()
     var header= jspack.Unpack("!HHL",msg,0);
     if(header[2] & 0x08000000)
     {
-      log.debug("Tis a login packet","Auth");
+      log.debug("This is a login packet","Auth");
       var data=jspack.Unpack("!HH",msg,8)
       var port=data[1];
       var authstuff=jspack.Unpack("!32s32s256s256s4L",msg,44)
@@ -69,7 +76,7 @@ function AuthServer()
   {
 
     try {
-    var configFile = fs.readFileSync("./auth.json").toString("utf8");
+    var configFile = fs.readFileSync(global.confdir+"auth.json").toString("utf8");
     config=JSON.parse(configFile);
     }
     catch (err)

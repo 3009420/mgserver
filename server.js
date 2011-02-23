@@ -1,8 +1,10 @@
 var dgram = require("dgram");
 var fs = require("fs");
-var log = require("./logger").logger;
+var path = require("path");
+var log = require("./shared/logger").logger;
 var buffer_id=0;
 
+global.confdir=path.resolve(".")+"/conf/"
 
 function Server()
 {
@@ -84,14 +86,16 @@ function Server()
   
   function init()
   {
-    var configFile = fs.readFileSync("./config.json").toString("utf8");
-    config=JSON.parse(configFile);
-    
-    if(config.moduledir == undefined)
-    {
-      log.moduledir=".";
-      log.warning("Module Directory not set, defaulting to \".\".","Main")
+    try {
+      var configFile = fs.readFileSync(global.confdir+"config.json").toString("utf8");
+      config=JSON.parse(configFile);
     }
+    catch (err)
+    {
+      log.error("Could not read config file:\n--> "+err,"Main")
+      return;
+    }
+
     
     if(config.modules.length>0)
     {
@@ -102,7 +106,7 @@ function Server()
       for(var i = 0;i<l;i++)
       {
         log.log("Loading module \""+m[i]+"\"","Main",32);
-        modules[m[i]]=require(config.moduledir+"/"+m[i])[m[i]]
+        modules[m[i]]=require("./modules/"+m[i])[m[i]]
         modules[m[i]].register(that);
       }
     }

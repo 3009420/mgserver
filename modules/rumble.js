@@ -1,13 +1,21 @@
 var dgram = require("dgram");
 var fs = require("fs");
-var log = require("./logger").logger;
-var jspack = require("./jspack").jspack;
+var path = require("path");
+var log = require("../shared/logger").logger;
+var jspack = require("../shared/jspack").jspack;
+
+if(global.confdir=="")
+{
+  global.confdir=path.resolve(".")+"/conf/"
+}
+  
 
 function RumbleServer()
 {
   var parent;
   var config = Array();
   var gameSocket;
+  var arenaSocket=Array();
   var initialized = false;
   var productcode=0x404;
   
@@ -127,10 +135,10 @@ function RumbleServer()
           slot.rumble_data.packet_next++
           var r = jspack.Unpack("!LHBB",msg,read_ofs);
           console.log(r);
-          var catl = config.arenas[r[3]].text.length;
+          var catl = config.arenas[r[3]].text.length+config.arenas[r[3]].name.length+5;
           var reply_buf=new Buffer(reply.length+4+9+catl);
           reply.copy(reply_buf,0,0);
-          reply_buf = jspack.PackTo("!HBB 9B "+catl+"s",reply_buf,reply.length,[2,0xb9,0,0,1,2,3,4,5,6,7,8,config.arenas[r[3]].text])
+          reply_buf = jspack.PackTo("!HBB 9B "+catl+"s",reply_buf,reply.length,[2,0x1,0,0,1,2,3,4,5,6,7,8,config.arenas[r[3]].name+"%n %n"+config.arenas[r[3]].text])
           reply=reply_buf
           
           packet_q = slot.rumble_data.packet_next;
@@ -146,12 +154,6 @@ function RumbleServer()
           break;
       }
       
-//       opcode_response |= 0x10;
-//       
-//       var reply_buf=new Buffer(reply.length+4);
-//       reply.copy(reply_buf,0,0);      
-//       reply = jspack.PackTo("!HH",reply_buf,reply.length,[0,100])
-
     }
     if(opcode & 0x4)
     {
@@ -189,7 +191,7 @@ function RumbleServer()
   {
 
     try {
-    var configFile = fs.readFileSync("./rumble.json").toString("utf8");
+    var configFile = fs.readFileSync(global.confdir+"rumble.json").toString("utf8");
     config=JSON.parse(configFile);
     }
     catch (err)
@@ -213,29 +215,30 @@ function RumbleServer()
     initialized=true;
   }
 
-  function setup_socket()
+  function setup_socket(p)
   {
-    gameSocket = dgram.createSocket("udp4");
+    s = dgram.createSocket("udp4");
     
-    gameSocket.on("message", function (msg, rinfo) 
+    s.on("message", function (msg, rinfo) 
     {
       handle_packet(msg,rinfo)
     });
 
-    gameSocket.on("listening", function () 
+    s.on("listening", function () 
     {
-      var address = gameSocket.address();
+      var address = s.address();
       log.log("RumbleServer listening " +
       address.address + ":" + address.port,"Rumble",36);
     });
 
-    gameSocket.on("close", function () 
+    s.on("close", function () 
     {
       log.log("RumbleServer closed","Rumble",36);
     });
 
-    gameSocket.bind(config.port);
+    s.bind(p);
     
+    return s
   }
   
   function send_queued_packets()
@@ -256,7 +259,8 @@ function RumbleServer()
       init()
     if(!started)//crude, needs improvement
       {
-      setup_socket()
+      gameSocket=setup_socket(config.port)
+//       arenaSocket.push(setup_socket(config.port+1))
       queue_interval=setInterval(function(){send_queued_packets()},50);
       }
     started = true;
