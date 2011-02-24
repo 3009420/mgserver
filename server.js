@@ -1,11 +1,10 @@
 var dgram = require("dgram");
 var fs = require("fs");
 var path = require("path");
-var log = require("./shared/logger").logger;
-var buffer_id=0;
 
-global.confdir=path.resolve(".")+"/conf/"
+global.basedir=path.resolve(".");
 
+var log = require(global.basedir+"/shared/logger").logger;
 function Server()
 {
   //Public vars
@@ -87,7 +86,7 @@ function Server()
   function init()
   {
     try {
-      var configFile = fs.readFileSync(global.confdir+"config.json").toString("utf8");
+      var configFile = fs.readFileSync(global.basedir+"/conf/config.json").toString("utf8");
       config=JSON.parse(configFile);
     }
     catch (err)

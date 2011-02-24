@@ -1,14 +1,14 @@
 var dgram = require("dgram");
 var fs = require("fs");
 var path = require("path");
-var log = require("../shared/logger").logger;
-var jspack = require("../shared/jspack").jspack;
 
-if(global.confdir=="")
+if(global.basedir=="")
 {
-  global.confdir=path.resolve(".")+"/conf/"
+  global.basedir=path.resolve(".")
 }
-  
+
+var log = require(global.basedir+"/shared/logger").logger;
+var jspack = require(global.basedir+"/shared/jspack").jspack;
 
 function AuthServer()
 {
@@ -76,7 +76,7 @@ function AuthServer()
   {
 
     try {
-    var configFile = fs.readFileSync(global.confdir+"auth.json").toString("utf8");
+    var configFile = fs.readFileSync(global.basedir+"/conf/auth.json").toString("utf8");
     config=JSON.parse(configFile);
     }
     catch (err)
