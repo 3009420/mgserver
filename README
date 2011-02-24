@@ -1,0 +1,89 @@
+Copyright (C) 2011 by the RITV Revival Project (http://ritv.wikia.com/)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+== Welcome to the Modular Game Server ==
+
+This server is part of the effort to recreate a protocol-compatible server for 
+the "Rumble in The Void" original game client. 
+The original VR1 server software was never released to the public. Consequently
+it was lost when the last game host (GOA) closed their Rumble servers and VR1 
+went out of business. Even if the software was available, there is nobody left 
+who has an working key or could issue one. So here we are.
+
+Before I get into the details let me get something straight:
+According to personal communication with former game developers from VR1, 
+"Rumble in the Void" and any other Conductor games can safely be considered 
+abandonware. Nontheless the copyright for the client software resides with whoever 
+bought VR1. Therefore the main aim of this project is learning how to develop an 
+efficient MMO game server. "Rumble in the Void" is chosen as a simple enough 
+example of a client application. 
+
+!!!
+The developers do NOT support any kind of COMMERCIAL use of the software generated
+by this project in conjunction with the VR1 Rumble in the Void game client. 
+!!!
+
+If anyone was to develop a free client though...  
+
+Comments and suggestions:
+  shlainnblaze@gmail.com
+
+== System Requirements, Installation, etc ==
+
+node.js (v0.4.1 tested and working) is required to run this server. Further requirements
+may depend on the game modules
+
+To test this software download the source from github, adjust the config files to
+your liking, and run
+
+node server.js
+
+The RITV client version for testing is currently v2.50.f (20503). Different versions
+may work as well.
+
+
+== Current State and Future Plans ==
+
+This section will be updated with more information as development proceeds.
+
+24.02.2011:
+The basic framework has been roughly slapped together and works so far.
+It is possible to connect to the Auth server with the RITV client.
+Arenas and descriptions are shown.
+It is not yet possible to join games.
+
+Modularity is on the way where I want to have it. But not there yet.
+The mid-term goal is to be able to run multiple instances of the main server
+in parallel (multiprocessing) or possibly on different machines, which can be 
+transparently controlled from one master control instance. Each instance can run 
+one or several modules. For example, the Auth server could run on one machine, 
+the Rumble server on another, and the SARAC server on yet another and all could
+be controlled from one of the machines. I am not completely sure how this will 
+be accomplished, yet. But the client and the protocol definitely allow for this.
+
+
+
+
+
+
+
+
+
+
